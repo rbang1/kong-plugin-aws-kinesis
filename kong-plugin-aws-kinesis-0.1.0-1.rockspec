@@ -21,8 +21,8 @@ local pluginName = "aws-kinesis"
 build = {
   type = "builtin",
   modules = {
-    ["kong.plugins."..pluginName..".handler"] = "src/lua/plugin/handler.lua",
-    ["kong.plugins."..pluginName..".schema"] = "src/lua/plugin/schema.lua",
-    ["kong.plugins."..pluginName..".jsontransform"] = "src/lua/plugin/jsontransform.lua",
+    ["kong.plugins."..pluginName..".handler"] = "src/handler.lua",
+    ["kong.plugins."..pluginName..".schema"] = "src/schema.lua",
+    ["kong.plugins."..pluginName..".jsontransform"] = "src/jsontransform.lua",
   }
 }
