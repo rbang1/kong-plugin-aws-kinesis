@@ -42,4 +42,6 @@ Plugin to write records to AWS Kinesis stream.
  By default, all the request parameters are converted to json and passed through to Kinesis. Optionally you can 
  provide a data template to create a data json that can use values from request parameters and headers. For more details - check the comments for `M.transform` function under `src/jsontransform.lua`.
 
+## Running Tests
 
+ Run specs using `./bin/busted` from repo. Running the blackbox `awskinesis_spec.lua` requires a pre-existing Kinesis Stream. Specify AWS Key/Secret, Stream name, Region in kong_tests.conf or preferably create your own configuration file and provide its location in `TEST_CONF_PATH` environment variable.
