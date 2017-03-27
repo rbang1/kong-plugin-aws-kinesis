@@ -85,6 +85,10 @@ function plugin:access(config)
     secret_key = config.aws_secret,
   }
 
+  if config.aws_debug then
+    ngx.log(ngx.DEBUG, "AWS Request: "..cjson.encode(opts))
+  end
+
   local request, err = aws_v4(opts)
   if err then
     return responses.send_HTTP_INTERNAL_SERVER_ERROR(err)

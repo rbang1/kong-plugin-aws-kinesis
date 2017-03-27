@@ -1,0 +1,11 @@
+#!/usr/local/openresty/bin/resty
+
+require("kong.core.globalpatches")({
+  cli = true,
+  rbusted = true
+})
+
+package.path = "?/init.lua;"..package.path
+
+-- Busted command-line runner
+require 'busted.runner'({ standalone = false })
