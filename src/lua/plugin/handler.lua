@@ -4,6 +4,7 @@ local Multipart = require "multipart"
 local cjson = require "cjson.safe"
 local utils = require "kong.tools.utils"
 local jp = require "jsonpath"
+local jsont = require "kong.plugins.aws-kinesis.jsontransform"
 local aws_v4 = require "kong.plugins.aws-lambda.v4"
 local responses = require "kong.tools.responses"
 local http = require "resty.http"
@@ -33,30 +34,38 @@ local function retrieve_parameters()
   return utils.table_merge(ngx.req.get_uri_args(), body_parameters)
 end
 
----[[ runs in the 'access_by_lua_block'
+-- runs in the 'access_by_lua_block'
 function plugin:access(config)
   plugin.super.access(self)
 
   local params = retrieve_parameters()
   
-  -- set partition key
-  local partition_key
-  if config.partition_key_path then
-    partition_key = jp.value(params, config.partition_key_path)
-  end
-  if not partition_key then
-    partition_key = ngx.md5(cjson.encode(params))
-  end
-
   -- set client ip
   local client_ip = ngx.var.remote_addr
   if ngx.req.get_headers()['x-forwarded-for'] then
     client_ip = string.match(ngx.req.get_headers()['x-forwarded-for'], "[^,%s]+")
   end
 
+  -- set data
+  local data = params
+  if config.data_template then
+    local template = cjson.decode(config.data_template)
+    data = jsont.transform(template, params, ngx.req.get_headers(), client_ip)
+  end
+  local dataJson = cjson.encode(data)
+
+  -- set partition key
+  local partition_key
+  if config.partition_key_path then
+    partition_key = jp.value(params, config.partition_key_path)
+  end
+  if not partition_key then
+    partition_key = ngx.md5(dataJson)
+  end
+
   local body = {
     StreamName = config.stream_name,
-    Data = ngx.encode_base64(cjson.encode({ip = client_ip, payload = params})),
+    Data = ngx.encode_base64(dataJson),
     PartitionKey = partition_key
   }
   local bodyJson = cjson.encode(body)
@@ -120,7 +129,7 @@ function plugin:access(config)
   ngx.say(resp_body)
 
   return ngx.exit(res.status)
-end --]]
+end
 
 -- set the plugin priority, which determines plugin execution order
 plugin.PRIORITY = 1000

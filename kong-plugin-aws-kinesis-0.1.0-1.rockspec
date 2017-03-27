@@ -23,5 +23,6 @@ build = {
   modules = {
     ["kong.plugins."..pluginName..".handler"] = "src/lua/plugin/handler.lua",
     ["kong.plugins."..pluginName..".schema"] = "src/lua/plugin/schema.lua",
+    ["kong.plugins."..pluginName..".jsontransform"] = "src/lua/plugin/jsontransform.lua",
   }
 }
