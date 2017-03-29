@@ -1,9 +1,9 @@
 package = "kong-plugin-aws-kinesis"
-version = "0.1.0-1"
+version = "0.1.1-1"
 supported_platforms = {"linux", "macosx"}
 source = {
   url = "git://github.com/rbang1/kong-plugin-aws-kinesis",
-  tag = "0.1.0"
+  tag = "0.1.1"
 }
 
 description = {
